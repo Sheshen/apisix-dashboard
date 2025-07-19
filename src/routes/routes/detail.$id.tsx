@@ -118,7 +118,27 @@ export const RouteDetail = (props: RouteDetailProps) => {
   const [rawEditorVisible, setRawEditorVisible] = useBoolean(false);
 
   const routeQuery = useQuery(getRouteQueryOptions(id));
-  const { data: routeData } = routeQuery;
+  const { data: routeData, refetch } = routeQuery;
+
+  // Mutation for updating route from raw editor
+  const updateRouteFromRawEditor = useMutation({
+    mutationFn: (data: APISIXType['Route']) =>
+      putRouteReq(req, pipeProduce(produceRmUpstreamWhenHas('service_id'))(data)),
+    async onSuccess() {
+      notifications.show({
+        message: t('info.edit.success', { name: t('routes.singular') }),
+        color: 'green',
+      });
+      await refetch();
+      setRawEditorVisible(false);
+    },
+    onError: () => {
+      notifications.show({
+        message: t('component.global.copy', 'Update failed'),
+        color: 'red',
+      });
+    },
+  });
 
   return (
     <>
@@ -162,10 +182,13 @@ export const RouteDetail = (props: RouteDetailProps) => {
       </FormTOCBox>
       <RawDataEditor
         visible={rawEditorVisible}
-        readonly={true}
+        readonly={false}
         type="route"
         data={routeData?.value || {}}
         onClose={() => setRawEditorVisible(false)}
+        onSubmit={(data) => {
+          updateRouteFromRawEditor.mutate({ ...data, id } as APISIXType['Route']);
+        }}
       />
     </>
   );
