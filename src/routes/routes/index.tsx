@@ -17,22 +17,28 @@
 import type { ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Tooltip } from '@mantine/core';
+import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getRouteListQueryOptions, useRouteList } from '@/apis/hooks';
 import type { WithServiceIdFilter } from '@/apis/routes';
+import { putRouteReq } from '@/apis/routes';
 import { DeleteResourceBtn } from '@/components/page/DeleteResourceBtn';
 import PageHeader from '@/components/page/PageHeader';
 import { ToAddPageBtn, ToDetailPageBtn } from '@/components/page/ToAddPageBtn';
 import { AntdConfigProvider } from '@/config/antdConfigProvider';
 import { API_ROUTES } from '@/config/constant';
 import { queryClient } from '@/config/global';
+import { req } from '@/config/req';
 import type { APISIXType } from '@/types/schema/apisix';
 import { pageSearchSchema } from '@/types/schema/pageSearch';
+import { produceTime } from '@/utils/form-producer';
+import { pipeProduce } from '@/utils/producer';
 import type { ListPageKeys } from '@/utils/useTablePagination';
 import IconContentCopy from '~icons/material-symbols/content-copy';
+import IconPowerSettingsNew from '~icons/material-symbols/power-settings-new';
 
 export type RouteListProps = {
   routeKey: Extract<ListPageKeys, '/routes/' | '/services/detail/$id/routes/'>;
@@ -65,6 +71,13 @@ export const RouteList = (props: RouteListProps) => {
     });
   }, [navigate]);
 
+  const handleToggleOnline = useMutation({
+    mutationFn: (route: APISIXType['Route']) => putRouteReq(req, route),
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
   const DuplicateBtn = useCallback(({ record }: { record: APISIXType['RespRouteItem'] }) => (
     <Tooltip label={t('form.btn.duplicate')}>
       <Button
@@ -77,6 +90,33 @@ export const RouteList = (props: RouteListProps) => {
       </Button>
     </Tooltip>
   ), [t, handleDuplicate]);
+
+  const ToggleOnlineBtn = useCallback(({ record }: { record: APISIXType['RespRouteItem'] }) => {
+    const isOnline = record.value.status === 1;
+    const handleClick = () => {
+      const updatedRoute = {
+        ...record.value,
+        status: (isOnline ? 0 : 1) as 0 | 1,
+      };
+      // Use the existing utility to remove forbidden fields
+      const cleanRoute = pipeProduce(produceTime)(updatedRoute);
+      handleToggleOnline.mutate(cleanRoute);
+    };
+    
+    return (
+      <Tooltip label={isOnline ? t('form.btn.offline') : t('form.btn.online')}>
+        <Button
+          size="compact-xs"
+          variant="light"
+          color={isOnline ? 'red' : 'green'}
+          onClick={handleClick}
+          loading={handleToggleOnline.isPending}
+        >
+          <IconPowerSettingsNew />
+        </Button>
+      </Tooltip>
+    );
+  }, [t, handleToggleOnline]);
 
   const columns = useMemo<ProColumns<APISIXType['RespRouteItem']>[]>(() => {
     return [
@@ -105,13 +145,24 @@ export const RouteList = (props: RouteListProps) => {
         valueType: 'text',
       },
       {
+        dataIndex: ['value', 'status'],
+        title: t('form.basic.status'),
+        key: 'status',
+        valueType: 'select',
+        valueEnum: {
+          1: { text: t('table.enabled'), status: 'Success' },
+          0: { text: t('table.disabled'), status: 'Error' },
+        },
+      },
+      {
         title: t('table.actions'),
         valueType: 'option',
         key: 'option',
-        width: 160,
+        width: 200,
         render: (_, record) => [
           <ToDetailBtn key="detail" record={record} />,
           <DuplicateBtn key="duplicate" record={record} />,
+          <ToggleOnlineBtn key="toggle-online" record={record} />,
           <DeleteResourceBtn
             key="delete"
             name={t('routes.singular')}
@@ -122,7 +173,7 @@ export const RouteList = (props: RouteListProps) => {
         ],
       },
     ];
-  }, [t, ToDetailBtn, refetch, DuplicateBtn]);
+  }, [t, ToDetailBtn, refetch, DuplicateBtn, ToggleOnlineBtn]);
 
   return (
     <AntdConfigProvider>

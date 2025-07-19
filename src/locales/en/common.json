@@ -37,6 +37,8 @@
       "delete": "Delete",
       "duplicate": "Duplicate",
       "edit": "Edit",
+      "offline": "Take Offline",
+      "online": "Bring Online",
       "save": "Save",
       "upload": "Upload",
       "view": "View"
