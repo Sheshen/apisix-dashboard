@@ -35,6 +35,7 @@
       "addARow": "Add a row",
       "cancel": "Cancel",
       "delete": "Delete",
+      "duplicate": "Duplicate",
       "edit": "Edit",
       "save": "Save",
       "upload": "Upload",
@@ -300,6 +301,9 @@
     },
     "detail": {
       "title": "{{name}} Detail"
+    },
+    "duplicate": {
+      "title": "Duplicate {{name}}"
     },
     "edit": {
       "success": "Edit {{name}} Successfully",

@@ -17,7 +17,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { notifications } from '@mantine/notifications';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -77,11 +77,23 @@ export const RouteAddForm = (props: Props) => {
 function RouteComponent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const search = useSearch({ from: '/routes/add' });
+  
+  // Parse duplicate data if present
+  const duplicateData = search.duplicate ? JSON.parse(search.duplicate) : undefined;
+
   return (
     <>
-      <PageHeader title={t('info.add.title', { name: t('routes.singular') })} />
+      <PageHeader 
+        title={
+          duplicateData 
+            ? t('info.duplicate.title', { name: t('routes.singular') })
+            : t('info.add.title', { name: t('routes.singular') })
+        } 
+      />
       <FormTOCBox>
         <RouteAddForm
+          defaultValues={duplicateData}
           navigate={(res) =>
             navigate({
               to: '/routes/detail/$id',
@@ -96,4 +108,7 @@ function RouteComponent() {
 
 export const Route = createFileRoute('/routes/add')({
   component: RouteComponent,
+  validateSearch: (search: Record<string, unknown>) => ({
+    duplicate: search.duplicate as string | undefined,
+  }),
 });

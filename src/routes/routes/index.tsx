@@ -16,8 +16,9 @@
  */
 import type { ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { createFileRoute } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { Button, Tooltip } from '@mantine/core';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getRouteListQueryOptions, useRouteList } from '@/apis/hooks';
@@ -31,6 +32,7 @@ import { queryClient } from '@/config/global';
 import type { APISIXType } from '@/types/schema/apisix';
 import { pageSearchSchema } from '@/types/schema/pageSearch';
 import type { ListPageKeys } from '@/utils/useTablePagination';
+import IconContentCopy from '~icons/material-symbols/content-copy';
 
 export type RouteListProps = {
   routeKey: Extract<ListPageKeys, '/routes/' | '/services/detail/$id/routes/'>;
@@ -47,6 +49,34 @@ export const RouteList = (props: RouteListProps) => {
     defaultParams
   );
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleDuplicate = useCallback((record: APISIXType['RespRouteItem']) => {
+    const duplicateData = {
+      ...record.value,
+      name: `${record.value.name}_copy_${Date.now()}`,
+      id: undefined,
+      create_time: undefined,
+      update_time: undefined,
+    };
+    navigate({
+      to: '/routes/add',
+      search: { duplicate: JSON.stringify(duplicateData) }
+    });
+  }, [navigate]);
+
+  const DuplicateBtn = useCallback(({ record }: { record: APISIXType['RespRouteItem'] }) => (
+    <Tooltip label={t('form.btn.duplicate')}>
+      <Button
+        size="compact-xs"
+        variant="light"
+        color="blue"
+        onClick={() => handleDuplicate(record)}
+      >
+        <IconContentCopy />
+      </Button>
+    </Tooltip>
+  ), [t, handleDuplicate]);
 
   const columns = useMemo<ProColumns<APISIXType['RespRouteItem']>[]>(() => {
     return [
@@ -78,9 +108,10 @@ export const RouteList = (props: RouteListProps) => {
         title: t('table.actions'),
         valueType: 'option',
         key: 'option',
-        width: 120,
+        width: 160,
         render: (_, record) => [
           <ToDetailBtn key="detail" record={record} />,
+          <DuplicateBtn key="duplicate" record={record} />,
           <DeleteResourceBtn
             key="delete"
             name={t('routes.singular')}
@@ -91,7 +122,7 @@ export const RouteList = (props: RouteListProps) => {
         ],
       },
     ];
-  }, [t, ToDetailBtn, refetch]);
+  }, [t, ToDetailBtn, refetch, DuplicateBtn]);
 
   return (
     <AntdConfigProvider>
