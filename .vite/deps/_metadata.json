@@ -1,0 +1,70 @@
+{
+  "hash": "df2c38be",
+  "configHash": "5e6f733b",
+  "lockfileHash": "683937f6",
+  "browserHash": "b288bc3a",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/.pnpm/react@19.1.0/node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "d7ad88ea",
+      "needsInterop": true
+    },
+    "@mantine/core": {
+      "src": "../../node_modules/.pnpm/@mantine+core@8.0.0_@mantine+hooks@8.0.0_react@19.1.0__@types+react@19.1.3_react-dom@19.1.0_react@19.1.0__react@19.1.0/node_modules/@mantine/core/esm/index.mjs",
+      "file": "@mantine_core.js",
+      "fileHash": "7fc5c335",
+      "needsInterop": false
+    },
+    "@mantine/modals": {
+      "src": "../../node_modules/.pnpm/@mantine+modals@8.0.0_@mantine+core@8.0.0_@mantine+hooks@8.0.0_react@19.1.0__@types+rea_1b2e8f862a4cc10fdd9f6530a96295cd/node_modules/@mantine/modals/esm/index.mjs",
+      "file": "@mantine_modals.js",
+      "fileHash": "78ff8343",
+      "needsInterop": false
+    },
+    "@mantine/notifications": {
+      "src": "../../node_modules/.pnpm/@mantine+notifications@8.0.0_@mantine+core@8.0.0_@mantine+hooks@8.0.0_react@19.1.0__@ty_119e231d43a4c1d4b3ccce3056de1eee/node_modules/@mantine/notifications/esm/index.mjs",
+      "file": "@mantine_notifications.js",
+      "fileHash": "b40adc8a",
+      "needsInterop": false
+    },
+    "@tanstack/react-query": {
+      "src": "../../node_modules/.pnpm/@tanstack+react-query@5.74.4_react@19.1.0/node_modules/@tanstack/react-query/build/modern/index.js",
+      "file": "@tanstack_react-query.js",
+      "fileHash": "71c90761",
+      "needsInterop": false
+    },
+    "@tanstack/react-router": {
+      "src": "../../node_modules/.pnpm/@tanstack+react-router@1.116.0_react-dom@19.1.0_react@19.1.0__react@19.1.0/node_modules/@tanstack/react-router/dist/esm/index.js",
+      "file": "@tanstack_react-router.js",
+      "fileHash": "dfc0a1cb",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/.pnpm/react@19.1.0/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "cffdb225",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/.pnpm/react-dom@19.1.0_react@19.1.0/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "db1cd73d",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-AFGWCERE": {
+      "file": "chunk-AFGWCERE.js"
+    },
+    "chunk-J3CPGV6H": {
+      "file": "chunk-J3CPGV6H.js"
+    },
+    "chunk-SFRD6U77": {
+      "file": "chunk-SFRD6U77.js"
+    },
+    "chunk-VM2S6LAG": {
+      "file": "chunk-VM2S6LAG.js"
+    }
+  }
+}

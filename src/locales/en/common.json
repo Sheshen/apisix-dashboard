@@ -370,5 +370,20 @@
   },
   "upstreams": {
     "singular": "Upstream"
+  },
+  "component": {
+    "global": {
+      "data": {
+        "editor": "Data Editor"
+      },
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "copy": "Copy",
+      "document": "Document",
+      "invalidJson": "Invalid JSON",
+      "invalidYaml": "Invalid YAML",
+      "copySuccess": "Copy successful",
+      "copyFail": "Copy failed"
+    }
   }
 }

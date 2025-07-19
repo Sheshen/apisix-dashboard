@@ -37,6 +37,7 @@ import { FormTOCBox } from '@/components/form-slice/FormSection';
 import { FormSectionGeneral } from '@/components/form-slice/FormSectionGeneral';
 import { DeleteResourceBtn } from '@/components/page/DeleteResourceBtn';
 import PageHeader from '@/components/page/PageHeader';
+import { RawDataEditor } from '@/components/RawDataEditor';
 import { API_ROUTES } from '@/config/constant';
 import { req } from '@/config/req';
 import { APISIX, type APISIXType } from '@/types/schema/apisix';
@@ -114,6 +115,10 @@ export const RouteDetail = (props: RouteDetailProps) => {
   const { id, onDeleteSuccess } = props;
   const { t } = useTranslation();
   const [readOnly, setReadOnly] = useBoolean(true);
+  const [rawEditorVisible, setRawEditorVisible] = useBoolean(false);
+
+  const routeQuery = useQuery(getRouteQueryOptions(id));
+  const { data: routeData } = routeQuery;
 
   return (
     <>
@@ -123,6 +128,13 @@ export const RouteDetail = (props: RouteDetailProps) => {
           title: t('info.detail.title', { name: t('routes.singular') }),
           extra: (
             <Group>
+              <Button
+                onClick={() => setRawEditorVisible(true)}
+                size="compact-sm"
+                variant="outline"
+              >
+                {t('component.global.data.editor', 'Raw Editor')}
+              </Button>
               <Button
                 onClick={() => setReadOnly(false)}
                 size="compact-sm"
@@ -148,6 +160,13 @@ export const RouteDetail = (props: RouteDetailProps) => {
           id={id}
         />
       </FormTOCBox>
+      <RawDataEditor
+        visible={rawEditorVisible}
+        readonly={true}
+        type="route"
+        data={routeData?.value || {}}
+        onClose={() => setRawEditorVisible(false)}
+      />
     </>
   );
 };
