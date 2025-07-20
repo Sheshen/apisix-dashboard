@@ -65,10 +65,23 @@ export const RouteList = (props: RouteListProps) => {
       create_time: undefined,
       update_time: undefined,
     };
-    navigate({
-      to: '/routes/add',
-      search: { duplicate: JSON.stringify(duplicateData) }
-    });
+    
+    // Generate unique session storage key
+    const duplicateId = `route_duplicate_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Store data in session storage
+    try {
+      sessionStorage.setItem(duplicateId, JSON.stringify(duplicateData));
+      navigate({
+        to: '/routes/add',
+        search: { duplicateId }
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to store duplicate data:', error);
+      // Fallback to direct navigation without duplication
+      navigate({ to: '/routes/add', search: { duplicateId: undefined } });
+    }
   }, [navigate]);
 
   const handleToggleOnline = useMutation({

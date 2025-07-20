@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { notifications } from '@mantine/notifications';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
+import { useEffect,useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -79,8 +80,47 @@ function RouteComponent() {
   const navigate = useNavigate();
   const search = useSearch({ from: '/routes/add' });
   
-  // Parse duplicate data if present
-  const duplicateData = search.duplicate ? JSON.parse(search.duplicate) : undefined;
+  // Parse duplicate data from session storage
+  const duplicateData = useMemo(() => {
+    if (!search.duplicateId) return undefined;
+    
+    try {
+      const stored = sessionStorage.getItem(search.duplicateId);
+      if (!stored) return undefined;
+      
+      const parsed = JSON.parse(stored);
+      return parsed;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to parse duplicate data:', error);
+      return undefined;
+    }
+  }, [search.duplicateId]);
+
+  // Clean up session storage after component mounts
+  useEffect(() => {
+    if (search.duplicateId && duplicateData) {
+      // Clean up after a short delay to ensure the form has been populated
+      const cleanup = () => {
+        try {
+          if (search.duplicateId) {
+            sessionStorage.removeItem(search.duplicateId);
+          }
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('Failed to cleanup duplicate data:', error);
+        }
+      };
+      
+      // Cleanup after component mounts and form is initialized
+      const timeoutId = setTimeout(cleanup, 1000);
+      
+      return () => {
+        clearTimeout(timeoutId);
+        cleanup();
+      };
+    }
+  }, [search.duplicateId, duplicateData]);
 
   return (
     <>
@@ -109,6 +149,6 @@ function RouteComponent() {
 export const Route = createFileRoute('/routes/add')({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => ({
-    duplicate: search.duplicate as string | undefined,
+    duplicateId: search.duplicateId as string | undefined,
   }),
 });
